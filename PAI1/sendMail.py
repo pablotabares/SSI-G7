@@ -8,7 +8,7 @@
 # Importación de la librería necesaria para el envío de correos
 import smtplib
 
-def sendMail(src, pwd, dst, sub, msg):
+def sendMail(dst, sub, msg):
 	# << Montaje del correo electrónico
 	email = """From: %s
 To: %s
@@ -16,7 +16,7 @@ MIME-Version: 1.0
 Content-type: text/html
 Subject: %s
 %s
-""" %(src, dst, sub, msg)
+""" %('ssii.g7.etsii.us@gmail.com', dst, sub, msg)
 	# >> Fin del montaje del correo electrónico
 
 	# << Envío del correo
@@ -26,10 +26,10 @@ Subject: %s
                 server.starttls()
 		try:
 			# Inicio de sesión en el servidor de correo electrónico de origen.
-			server.login(src, pwd)
+			server.login('ssii.g7.etsii.us@gmail.com', 'hcXDPhBNYD')
 			try:
 				# Envío del correo electrónico
-				server.sendmail(src, dst, email)
+				server.sendmail('ssii.g7.etsii.us@gmail.com', dst, email)
 			except:
 				print('Error al enviar el correo electrónico')
 		except:
