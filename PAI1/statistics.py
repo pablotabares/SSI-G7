@@ -14,7 +14,6 @@ def stats(log_name):
         pos = 0
         neg = 0
         for line in enumerate(f):
-            print(line)
             if ('[CRITICAL]' in str(line)):
                 neg += 1
             elif ('[ERROR]' in str(line)):
@@ -28,7 +27,7 @@ def stats(log_name):
 
     daily_ratio = pos/(pos+neg)
 
-    try: 
+    try:
         with open(kpi_name, 'r') as f:
             lines = f.read().splitlines()
             last_line = lines[-1]
