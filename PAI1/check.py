@@ -77,6 +77,7 @@ def reset():
         generate(cfg.project_path+'config.py')
         for file in cfg.files:
             generate(file)
+        add_to_cron()
         return True
     else:
         error('You need root privileges to reset')
@@ -91,7 +92,6 @@ def config_has_changed():
 
 def install():
     info('INSTALLING...')
-    add_to_cron()
     reset()
     info('¡¡INSTALLATION COMPLETE. HIDS CHECK WILL RUN EVERY ' + str(cfg.cron_time) + ' MINUTES!!')
 
