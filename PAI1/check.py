@@ -105,10 +105,6 @@ def add_to_cron():
     crontab.write()
     info('Cron entry updated')
 
-def run_bash(command):
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
-    return process.communicate() #output, error
-
 def info(msg, filename=None):
     logger(msg, 'INFO', filename)
 
