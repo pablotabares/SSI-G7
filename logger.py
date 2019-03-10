@@ -2,44 +2,32 @@ import os
 import datetime
 
 
-def logger(file_name, log_name):
-    print("Hi")
+def logger(msg, type, file_name):
+
     now = datetime.datetime.now()
+    log_name = 'log_' + str(now.year) + '_' + str(now.month) + '.log'
+    prev_log_name = 'log_' + str(now.year) + '_' + str(now.month-1) + '.log'
 
-    file0 = open(log_name, "r")
-    first = file0.read(7)
-    file0.close()
+    exits = os.path.isfile('./' + log_name) 
+    filetext = ' FILE: ' + file_name + ' //' if file_name is not None else ''
 
-    month = first[5:7]
+    if(now.day == 1 and not exits) :
+        rename(prev_log_name)
 
-    print("Current month: " + str(now.month))
-    print("Creation month: " + month)
+    file = open(log_name, 'a')
+    file.write('[' + type + '] ' + now.strftime('%Y-%m-%d %H:%M:%S') + ' => ' + filetext + ' MSG: ' + msg + '\n')
+    file.close()
 
-    if(int(month) < 6):
-        if(int(month) + 6 > now.month):
-            file = open(log_name, "a")
-            file.write(now.strftime('%Y-%m-%d %H:%M:%S') + " " + file_name + "\n")
-            file.close()
-        else:
-            rename(log_name)
-            file = open("log" + first + ".txt", "a")
-            file.write(now.strftime('%Y-%m-%d %H:%M:%S') + " " + file_name + "\n")
-            file.close()
-    else:
-        if(now.month + 6 < int(month)):
-            file = open(log_name, "a")
-            file.write(now.strftime('%Y-%m-%d %H:%M:%S') + " " + file_name + "\n")
-            file.close()
-        else:
-            rename(log_name)
-            file = open("log" + first + ".txt", "a")
-            file.write(now.strftime('%Y-%m-%d %H:%M:%S') + " " + file_name + "\n")
-            file.close()
+    neg_verified = ['WARNING', 'ERROR', 'CRITICAL']
 
+    if(type in neg_verified):
+        report_name = 'report_' + str(now.year) + '_' + str(now.month) + '.log'
+        f = open(report_name, 'a')
+        f.write(file_name + ',')
 
 def rename(file_name):
     pre, ext = os.path.splitext(file_name)
-    os.rename(file_name, pre + ".bak")
+    os.rename(file_name, pre + '.bak')
 
 
-logger("Archivo", "ok.txt")
+logger("mensaje" , "WARNING", "Archivo.txt")
