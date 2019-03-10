@@ -17,13 +17,13 @@ Content-type: text/html
 Subject: %s
 %s
 """ %('ssii.g7.etsii.us@gmail.com', dst, sub, msg)
-	# >> Fin del montaje del correo electrónico
+# >> Fin del montaje del correo electrónico
 
 	# << Envío del correo
 	# Apertura del servido SMTP en el servidor de correo electrónico de origen
 	try:
 		server = smtplib.SMTP('smtp.gmail.com:587')
-                server.starttls()
+		server.starttls()
 		try:
 			# Inicio de sesión en el servidor de correo electrónico de origen.
 			server.login('ssii.g7.etsii.us@gmail.com', 'hcXDPhBNYD')

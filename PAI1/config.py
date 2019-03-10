@@ -5,7 +5,7 @@ files = [
 	'/media/mount/SSI-G7/PAI1/test2.txt',
 ]
 
-email_report = 'manu@manusoft.es'
+email_report = ''
 
 hashes_divider = '$<>$'
 chunksize = 8192
@@ -29,4 +29,4 @@ log_file = 'log.log'
 
 project_path = '/media/mount/SSI-G7/PAI1/'
 #in minutes
-cron_time=1
+cron_time=30

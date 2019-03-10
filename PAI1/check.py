@@ -119,7 +119,14 @@ def warn(msg, filename=None):
 
 try:
     if len(sys.argv) < 2:
-        print('Please specify an action')
+        print('-- INSEGUS GRUPO 7 HIDS --')
+        print('Re-run the script with one of the following options')
+        print('+check:')
+        print('\t Hash checking')
+        print('+reset:')
+        print('\t Reset after config changes are applied')
+        print('+install:')
+        print('\t First set-up command')
     else:
         function = sys.argv[1]
         if function == 'check':
