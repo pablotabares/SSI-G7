@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
+
 files = [
-	'test.txt',
-	'test2.txt'
+	'/media/mount/SSI-G7/PAI1/test.txt',
+	'/media/mount/SSI-G7/PAI1/test2.txt',
 ]
 
 hashes_divider = '$<>$'
@@ -21,4 +22,8 @@ log_types = [
 	'terminal', 'file'
 ]
 
-log_file = 'log.log' 
+log_file = 'log.log'
+
+project_path = '/media/mount/SSI-G7/PAI1/'
+#in seconds
+cron_time=60

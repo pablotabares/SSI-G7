@@ -8,9 +8,12 @@ import datetime
 import crypt
 from getpass import getpass
 import spwd
+from logger import logger
+import os
+import subprocess
 
 def find_hash(filename):
-    f = open('hashes.txt','r')
+    f = open(cfg.project_path+'hashes.txt','r')
     hash = None
     for line in f:
         if filename in line:
@@ -42,7 +45,7 @@ def generate(filename):
             blakehash,
             bcrypt.gensalt(10)
         )
-        f = open('hashes.txt','a')
+        f = open(cfg.project_path+'hashes.txt','a')
         f.write(filename + cfg.hashes_divider + base64.b64encode(hashed).decode('utf-8') + "\n")
     except FileNotFoundError:
         error('FILE NOT FOUND', filename)
@@ -51,83 +54,52 @@ def generate(filename):
 def check(filename):
     try:
         open(filename,'r').close() #nos aseguramos que existe el archivo
-        hash = find_hash(filename)
-        if hash is None:
-            generate(filename)
-            info('HASH GENERATED')
-            return
-        blakehash = get_blake2b_file(filename)
-        check = bcrypt.checkpw(blakehash, base64.b64decode(hash))
-        if check:
-            info('SUCCESSFUL', filename)
-        else:
-            error('INTEGRITY FAIL', filename)
-        return check
     except FileNotFoundError:
         error('FILE NOT FOUND', filename)
+        return False
+    hash = find_hash(filename)
+    if hash is None:
+        generate(filename)
+        info('HASH GENERATED')
+        return False
+    blakehash = get_blake2b_file(filename)
+    check = bcrypt.checkpw(blakehash, base64.b64decode(hash))
+    if check:
+        info('SUCCESSFUL', filename)
+    else:
+        error('INTEGRITY FAIL', filename)
+    return check
 
 def reset():
-    f = open('hashes.txt','w').close()
-
-def login(user, password):
-    # Tries to authenticate a user.
-    # Returns True if the authentication succeeds, else the reason
-    # (string) is returned.
-    try:
-        enc_pwd = spwd.getspnam(user)[1]
-        if enc_pwd in ["NP", "!", "", None]:
-            return "user '%s' has no password set" % user
-        if enc_pwd in ["LK", "*"]:
-            return "account is locked"
-        if enc_pwd == "!!":
-            return "password has expired"
-        # Encryption happens here, the hash is stripped from the
-        # enc_pwd and the algorithm id and salt are used to encrypt
-        # the password.
-        if crypt.crypt(password, enc_pwd) == enc_pwd:
-            return True
-        else:
-            return "incorrect password"
-    except KeyError:
-        return "user '%s' not found" % user
-    return "unknown error"
+    if os.geteuid() == 0:
+        f = open(cfg.project_path+'hashes.txt','w').close()
+        generate('config.py')
+        for file in cfg.files:
+            generate(file)
+        return True
+    else:
+        error('You need root privileges to reset')
+        return False
 
 def config_has_changed():
-    is_ok = check(filename='config.py')
+    is_ok = check(filename=cfg.project_path+'config.py')
     if not is_ok:
-        error('CONFIGURATION FILE HAS CHANGED, WANT TO RESET? [Y,N]')
-        confirm = input('CONFIGURATION FILE HAS CHANGED, WANT TO RESET? [Y,N]')
-        if confirm in ['Y','yes','y']:
-            admin_user = input('Admin User:')
-            admin_pass = getpass('Password:')
-            login_result = login(admin_user, admin_pass)
-            if login_result is True:
-                info('RESETING...')
-                reset()
-                generate('config.py')
-                for file in cfg.files:
-                    generate(file)
-                return True
-            else:
-                error(login_result)
-                return False
-        else:
-            print('EXITING...')
-            return False
+        error('Configuration file has changed. Please re-run this script with the reset option.')
     else:
         return True
 
-def logger(msg, type, filename=None):
-    if cfg.log_levels.get(type) >= cfg.log_level:
-        filetext = ' FILE: ' + filename + ' //' if filename is not None else ''
-        log_msg = datetime.datetime.now().strftime('%d-%b-%y %H:%M:%S') + \
-          '[' + type + '] =>' + filetext + ' MSG: ' + msg
-        if 'terminal' in cfg.log_types:
-            print(log_msg)
-        if 'file' in cfg.log_types:
-            logname = cfg.log_file if hasattr(cfg,'log_file') else 'log.log'
-            f = open(logname,'a')
-            f.write(log_msg + "\n")
+def install():
+    add_to_cron()
+
+def add_to_cron():
+    output, error = run_bash("crontab -l | grep -q 'check.py' && echo 'exists' || echo 'does not exist'")
+    if str(output)[2:-3] != 'exists':
+        run_bash('(crontab -l 2>/dev/null; echo "* * * * * '+cfg.project_path+'check.py check") | crontab -')
+        run_bash('(crontab -l 2>/dev/null; echo "* * * * * sleep '+str(cfg.cron_time)+'; '+cfg.project_path+'check.py check") | crontab -')
+
+def run_bash(command):
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+    return process.communicate() #output, error
 
 def info(msg, filename=None):
     logger(msg, 'INFO', filename)
@@ -152,6 +124,8 @@ try:
                     check(file)
         elif function == 'reset':
             reset()
+        elif function == 'install':
+            install()
         else:
             print('That action does not exist')
 except Exception as ex:
