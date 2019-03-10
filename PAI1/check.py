@@ -11,6 +11,7 @@ import spwd
 from logger import logger
 import os
 import subprocess
+from crontab import CronTab
 
 def find_hash(filename):
     f = open(cfg.project_path+'hashes.txt','r')
@@ -89,14 +90,20 @@ def config_has_changed():
         return True
 
 def install():
+    info('INSTALLING...')
     add_to_cron()
     reset()
+    info('¡¡INSTALLATION COMPLETE. HIDS CHECK WILL RUN EVERY ' + str(cfg.cron_time) + ' MINUTES!!')
 
 def add_to_cron():
-    output, error = run_bash("crontab -l | grep -q 'check.py' && echo 'exists' || echo 'does not exist'")
-    if str(output)[2:-3] != 'exists':
-        run_bash('(crontab -l 2>/dev/null; echo "* * * * * '+cfg.project_path+'check.py check") | crontab -')
-        run_bash('(crontab -l 2>/dev/null; echo "* * * * * sleep '+str(cfg.cron_time)+'; '+cfg.project_path+'check.py check") | crontab -')
+    crontab = CronTab(user='root')
+    for job in crontab:
+        if job.comment == 'hidscheck':
+            crontab.remove(job)
+    job = crontab.new(command=cfg.project_path+'check.py check', comment='hidscheck')
+    job.minute.every(cfg.cron_time)
+    crontab.write()
+    info('Cron entry updated')
 
 def run_bash(command):
     process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)

@@ -25,5 +25,5 @@ log_types = [
 log_file = 'log.log'
 
 project_path = '/media/mount/SSI-G7/PAI1/'
-#in seconds
-cron_time=60
+#in minutes
+cron_time=1
