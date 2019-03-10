@@ -90,6 +90,7 @@ def config_has_changed():
 
 def install():
     add_to_cron()
+    reset()
 
 def add_to_cron():
     output, error = run_bash("crontab -l | grep -q 'check.py' && echo 'exists' || echo 'does not exist'")
