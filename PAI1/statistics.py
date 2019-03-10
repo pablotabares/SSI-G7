@@ -14,6 +14,7 @@ def stats(log_name):
         pos = 0
         neg = 0
         for line in enumerate(f):
+            print(line)
             if ('[CRITICAL]' in str(line)):
                 neg += 1
             elif ('[ERROR]' in str(line)):
