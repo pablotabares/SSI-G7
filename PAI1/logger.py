@@ -1,6 +1,6 @@
 import os
 import datetime
-
+import config as cfg
 
 def logger(msg, type, file_name=None):
     if cfg.log_levels[type] < cfg.log_level:
@@ -10,7 +10,7 @@ def logger(msg, type, file_name=None):
     log_name = cfg.project_path + '/log_' + str(now.year) + '_' + str(now.month) + '.log'
     prev_log_name = cfg.project_path + '/log_' + str(now.year) + '_' + str(now.month-1) + '.log'
 
-    exits = os.path.isfile(log_name) 
+    exits = os.path.isfile(log_name)
     filetext = ' FILE: ' + file_name + ' //' if file_name is not None else ''
 
     # Si es un nuevo mes, el log del mes anterior lo pasa a .bak y se crea un log nuevo
@@ -36,6 +36,3 @@ def logger(msg, type, file_name=None):
 def rename(file_name):
     pre, ext = os.path.splitext(file_name)
     os.rename(file_name, pre + '.bak')
-
-
-logger("mensaje" , "WARNING", "Archivo.txt")
