@@ -5,6 +5,8 @@ files = [
 	'/media/mount/SSI-G7/PAI1/test2.txt',
 ]
 
+email_report = 'manu@manusoft.es'
+
 hashes_divider = '$<>$'
 chunksize = 8192
 
@@ -17,6 +19,7 @@ log_levels = {
 }
 
 log_level = 0
+email_level = 3
 
 log_types = [
 	'terminal', 'file'

@@ -1,6 +1,7 @@
 import os
 import datetime
 import config as cfg
+from sendMail import sendMail
 
 def logger(msg, type, file_name=None):
     if cfg.log_levels[type] < cfg.log_level:
@@ -32,6 +33,11 @@ def logger(msg, type, file_name=None):
         report_name = 'report_' + str(now.year) + '_' + str(now.month) + '.log'
         f = open(report_name, 'a')
         f.write(file_name + '*,*')
+
+    # Envío del mail con el error
+    if cfg.log_levels[type] >= cfg.email_level:
+        sbj = '[' + type + ']'
+        sendMail(cfg.email_report,sbj,log_msg)
 
 def rename(file_name):
     pre, ext = os.path.splitext(file_name)
