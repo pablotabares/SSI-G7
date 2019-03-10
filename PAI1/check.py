@@ -73,7 +73,7 @@ def check(filename):
 def reset():
     if os.geteuid() == 0:
         f = open(cfg.project_path+'hashes.txt','w').close()
-        generate('config.py')
+        generate(cfg.project_path+'config.py')
         for file in cfg.files:
             generate(file)
         return True
