@@ -1,0 +1,2 @@
+bcrypt==3.1.6
+matplotlib==3.0.3
