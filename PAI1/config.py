@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 
 files = [
-	'/media/mount/SSI-G7/PAI1/test.txt',
-	'/media/mount/SSI-G7/PAI1/test2.txt',
+	'/root/Escritorio/test_files/test.txt',
+	'/root/Escritorio/test_files/1GB.zip',
 ]
+email_report = 'manu@manusoft.es'
+project_path = '/root/Escritorio/SSI-G7/PAI1/'
+log_level = 0
+email_level = 3
+cron_time=1 #in minutes
 
-email_report = ''
+
 
 hashes_divider = '$<>$'
 chunksize = 8192
-
 log_levels = {
 	'DEBUG': 0,
 	'INFO': 1,
@@ -17,16 +21,7 @@ log_levels = {
 	'ERROR': 3,
 	'CRITICAL': 4,
 }
-
-log_level = 0
-email_level = 3
-
 log_types = [
 	'terminal', 'file'
 ]
-
 log_file = 'log.log'
-
-project_path = '/media/mount/SSI-G7/PAI1/'
-#in minutes
-cron_time=30
