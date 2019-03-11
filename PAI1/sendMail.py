@@ -15,6 +15,7 @@ To: %s
 MIME-Version: 1.0
 Content-type: text/html
 Subject: %s
+
 %s
 """ %('ssii.g7.etsii.us@gmail.com', dst, sub, msg)
 # >> Fin del montaje del correo electrónico

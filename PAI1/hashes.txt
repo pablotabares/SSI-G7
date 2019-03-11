@@ -1,2 +1,3 @@
-/media/mount/SSI-G7/PAI1/config.py$<>$JDJiJDEwJEVvYWpjaGRiMmNaSGxEcHdIM3d0MC52Zml2UXFZODZsNmw0REJOU2hxVEgvZTdFdkMyN3Np
-/media/mount/SSI-G7/PAI1/test.txt$<>$JDJiJDEwJG9meWUxQ2t0RGtkMFdOaU9BVzJjYnVvekdVUHpTYlVXSVgxTnpzN3hZcjBXVkhMdHFaR1lL
+/root/Documents/Repo/SSI-G7/PAI1/config.py$<>$JDJiJDEwJG04TnRXdEFRUU5DSjA2WmNIY2EyQS5IbWNVT3lGSGRtSi5mbFljVS9aYjA2RmZVLnB0TmZt
+/root/Desktop/testfiles/test.txt$<>$JDJiJDEwJGRpM0ZzTThzb3c2ajhuUEYzcEFrSS5SZHExWi9ibHVHZ3l2bmZUTHNJY2FZZXJINDVmSEVL
+/root/Desktop/testfiles/cygloop.jpg$<>$JDJiJDEwJExhWVB3dmN0WXBraTZMT1d4N0szbGVMSEMvemt6cFBYYkZEVmpxZzJhQmJhQlRjMVFZdGo2
