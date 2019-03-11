@@ -1,0 +1,6 @@
+	Tamaño	|	1050Ti	|	Pesimista(*100000)
+	32bits	|	26s	|	
+	48bits	|	40days	|	2s
+	56bits	|	9973days|	2h
+	64bits	|	Overflow|       ¿?     <---- Suficiente y recomendado
+

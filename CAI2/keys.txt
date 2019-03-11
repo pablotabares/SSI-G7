@@ -1,0 +1,8 @@
+$HEX[7b0a027b]
+$HEX[18e136ed]
+$HEX[3d994634]
+$HEX[593d705c]
+$HEX[3d994634]
+Y=p\
+$HEX[7b0a027b]
+$HEX[18e136ed]
