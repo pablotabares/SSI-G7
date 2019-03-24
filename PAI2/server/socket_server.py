@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import socket
 from threading import Thread
-
+import server as serverfunctions
 
 #Clase con el hilo para atender a los clientes.
 #En el constructor recibe el socket con el cliente y los datos del cliente para escribir por pantalla
@@ -14,28 +14,35 @@ class Cliente(Thread):
     # Bucle para atender al cliente.
     def run(self):
       # Bucle indefinido hasta que el cliente envie "adios"
-      seguir = True
-      while seguir:
-         # Espera por datos
-         peticion = self.socket.recv(1000)
+      # seguir = True
+      # while seguir:
+     # Espera por datos
+     peticion = self.socket.recv(1000)
 
-         # Contestacion
-         if ("exit"!=peticion.decode()):
-             print (str(self.datos)+ " dice: "+peticion.decode())
-             self.socket.send("Recibido el mensaje: ".encode()+peticion)
+     # Contestacion
+     # if ("exit"!=peticion.decode()):
+     print (str(self.datos)+ " dice: "+peticion.decode())
+     [code, msg] = serverfunctions.receive(peticion.decode())
+     # Integridad Correcta
+     # if(code == 0):
+     # else:
 
-         # Contestacion y cierre a "exit"
-         if ("exit"==peticion.decode()):
-             print (str(self.datos)+ " pide cerrar la conexión")
-             self.socket.send("Cerrando la conexión".encode())
-             self.socket.close()
-             print ("Conexión cerrada con "+str(self.datos))
-             seguir = False
+     print(msg)
+     self.socket.send(msg.encode())
+     # Contestacion y cierre a "exit"
+     # if ("exit"==peticion.decode()):
+     #     print (str(self.datos)+ " pide cerrar la conexión")
+     # self.socket.send("Cerrando la conexión".encode())
+     self.socket.close()
+     print ("Conexión cerrada con "+str(self.datos))
+     # seguir = False
 
 
 
 
 if __name__ == '__main__':
+   # Aseguramos que el sistema está instalado
+   serverfunctions.initialize_db()
    # Se prepara el servidor
    server = socket.socket()
    server.bind(("", 8000))

@@ -30,7 +30,8 @@ Subject: %s
 			try:
 				# Envío del correo electrónico
 				server.sendmail('ssii.g7.etsii.us@gmail.com', dst, email)
-			except:
+			except Exception as e:
+				print(e)
 				print('Error al enviar el correo electrónico')
 		except:
 			print('Error al iniciar sesión en GMail')
