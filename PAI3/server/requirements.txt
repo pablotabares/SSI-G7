@@ -1,0 +1,4 @@
+bcrypt==3.1.6
+matplotlib==3.0.3
+julian==0.14
+texttable==1.6.1
