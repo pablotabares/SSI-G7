@@ -2,6 +2,7 @@
 import socket
 from threading import Thread
 import server as serverfunctions
+import ssl
 
 #Clase con el hilo para atender a los clientes.
 #En el constructor recibe el socket con el cliente y los datos del cliente para escribir por pantalla
@@ -44,17 +45,19 @@ if __name__ == '__main__':
    # Aseguramos que el sistema está instalado
    serverfunctions.initialize_db()
    # Se prepara el servidor
-   server = socket.socket()
-   server.bind(("", 8000))
-   server.listen(1)
-   print ("Esperando conexiones...")
+   context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+   with socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0) as sock:
+       sock.bind(("", 8000))
+       sock.listen(1)
+       with context.wrap_socket(sock, server_side=True) as ssock:
+           print ("Esperando conexiones...")
 
-   # bucle para atender clientes
-   while 1:
-      # Se espera a un cliente
-      socket_cliente, datos_cliente = server.accept()
-      # Se escribe su informacion
-      print ("Conexión establecida con "+str(datos_cliente))
-      # Se crea la clase con el hilo y se arranca.
-      hilo = Cliente(socket_cliente, datos_cliente)
-      hilo.start()
+           # bucle para atender clientes
+           while 1:
+              # Se espera a un cliente
+              socket_cliente, datos_cliente = ssock.accept()
+              # Se escribe su informacion
+              print ("Conexión establecida con "+str(datos_cliente))
+              # Se crea la clase con el hilo y se arranca.
+              hilo = Cliente(socket_cliente, datos_cliente)
+              hilo.start()
