@@ -19,21 +19,24 @@ def add_client(src=None):
     src = input('Account Nº to set-up:')
     if fetch_account(src) is not None:
         mode = 'updated'
-        over = input('Account already exists, are you sure you want to overwrite its key? [Y/N]')
+        over = input('Account already exists, are you sure you want to overwrite its key and password? [Y/N]')
         if over not in ['Y','y','yes']:
             print('Exiting...')
             exit()
     key = input('Please introduce the HMAC key:')
-    store_account(src, key, owner)
+    pwd = input('Please introduce the new password:')
+    store_account(src, key, owner, pwd)
     sendMail(owner,'Welcome to Group7 Bank','Your account with number ' + src + ' has been set up with key ' + key + '. You may import your account by typing: client.py import ' + src + ' ' + key)
     print('Account '+ mode + ' successfully!')
     return
 
-def receive(msg):
+def receive(msg, logged_acc):
     [src, dst, amt, time, rec_digest] = msg.split('|$|')
     acc = fetch_account(src)
     if acc is None:
         return [-1, 'Non existing account']
+    if acc[0] != logged_acc[0]:
+        return [-1, 'This account is not owned by the logged in user']
     check_msg = '|$|'.join(str(x) for x in [src, dst, amt, time])
     gen_digest = hmac.new(bytes(acc[1],'utf-8'), bytes(check_msg,'utf-8'), 'sha256').hexdigest()
     if (not hmac.compare_digest(rec_digest, gen_digest)):
@@ -46,14 +49,30 @@ def receive(msg):
         store_transaction(src, dst, float(amt), float(time), 0)
         return [0, 'Transaction received correctly']
 
+def login(user, pwd):
+    acc = fetch_account_by_mail(user)
+    if not acc:
+        return [False, 'ERROR: Incorrect Credentials', None]
+    if bcrypt.checkpw(pwd.encode(), acc[3]):
+        return [True, 'OK: Login Successfull', acc]
+    return [False, 'ERROR: Incorrect Credentials', None]
+
 def print_accounts():
-    for acc in fetch_accounts():
-        print(acc[0]+' (' + acc[2] + '): ' + acc[1])
+    #for acc in fetch_accounts():
+    #    print(acc[0]+' (' + acc[2] + '): ' + acc[1])
+    tabledata = [[ 'Account Nº', 'KEY', 'E-mail', 'Password']] + fetch_accounts()
+    table = Texttable()
+    table.add_rows(tabledata)
+    print(table.draw())
     return
 
 def print_transactions():
-    for tr in fetch_transactions_toprint():
-        print('[' + statuses()[tr[5]] + '] ' + tr[0] + ' => ' + tr[1] + ': ' + str(tr[2]) + '€ (' + str(tr[3]) + ' ' + str(tr[4]) + ')')
+    #for tr in fetch_transactions_toprint():
+    #    print('[' + statuses()[tr[5]] + '] ' + tr[0] + ' => ' + tr[1] + ': ' + str(tr[2]) + '€ (' + str(tr[3]) + ' ' + str(tr[4]) + ')')
+    tabledata = [[ 'Origin', 'Destination', 'Amount', 'Day', 'Time', 'Status']] + fetch_transactions_toprint()
+    table = Texttable()
+    table.add_rows(tabledata)
+    print(table.draw())
     return
 
 def resend_key(num):
@@ -72,7 +91,7 @@ def initialize_db():
         conn.close()
         print('Database already initialized')
         return
-    c.execute('''CREATE TABLE keys (account, key, owner)''')
+    c.execute('''CREATE TABLE keys (account, key, owner, pwd)''')
     c.execute('''CREATE TABLE transactions (origin, destination, amount, time, status)''')
     conn.commit()
     conn.close()
@@ -98,15 +117,24 @@ def fetch_account(acc):
     conn.close()
     return account
 
-def store_account(src, key, owner):
+def fetch_account_by_mail(mail):
+    [conn, c] = get_connection()
+    params = (mail,)
+    c.execute('SELECT * FROM keys where owner like ?',params)
+    account = c.fetchone()
+    conn.close()
+    return account
+
+def store_account(src, key, owner, pwd):
     acc = fetch_account(src)
+    hashed = bcrypt.hashpw(pwd.encode(), bcrypt.gensalt(10))
     [conn, c] = get_connection()
     if(acc is None):
-        params = (src, key, owner)
-        c.execute("INSERT INTO keys(account, key, owner) VALUES (?,?,?)", params)
+        params = (src, key, owner, hashed)
+        c.execute("INSERT INTO keys(account, key, owner, pwd) VALUES (?,?,?,?)", params)
     else:
-        params = (key, src)
-        c.execute('UPDATE keys SET key = ? WHERE account = ?', params)
+        params = (key, hashed, src)
+        c.execute('UPDATE keys SET key = ?, pwd = ? WHERE account = ?', params)
     conn.commit()
     conn.close()
     return

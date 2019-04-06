@@ -7,9 +7,45 @@ import os
 from datetime import datetime
 import bcrypt
 import base64
-import socket_client
 import sqlite3
 import julian
+import socket
+import ssl
+
+def connect_and_send():
+    # Se establece la conexion
+    context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    conn = context.wrap_socket(sock)
+    conn.connect(("localhost", 443))
+
+    # Recibimos la petición de correo y lo enviamos
+    rec = conn.recv(1000)
+    mail = input(rec.decode())
+    conn.send(mail.encode())
+
+    #Recibimos la petición de contraseña y la enviamos
+    rec = conn.recv(1000)
+    pwd = input(rec.decode())
+    conn.send(pwd.encode())
+
+    #Recibimos la resupuesta del login y la imprimimos en pantalla
+    login_result = conn.recv(1000).decode()
+    login_msg = conn.recv(1000).decode()
+    print('[SERVER] ' + login_msg)
+
+    if login_result != 'true':
+        conn.close()
+        return
+
+    #Generamos y enviamos la transferencia
+    msg = send()
+    conn.send(msg.encode())
+
+    # Se recibe la respuesta y se escribe en pantalla
+    datos = conn.recv(1000)
+    print('[SERVER] ' + datos.decode())
+    conn.close()
 
 def send():
     num = input('Origin Account:')
@@ -27,7 +63,7 @@ def send():
         amt = float(input('Amount to transfer in €:'))
     msg = num+'|$|'+dst+'|$|'+str(amt)+'|$|'+str(julian.to_jd(datetime.now()))
     digest = hmac.new(bytes(acc[1],'utf-8'), bytes(msg,'utf-8'), 'sha256').hexdigest()
-    socket_client.connect_and_send(msg+'|$|'+digest)
+    return msg+'|$|'+digest
 
 
 def new_key(src=None,key=None):
@@ -109,7 +145,7 @@ if len(sys.argv) < 2:
 else:
     function = sys.argv[1]
     if function == 'send':
-        send()
+        connect_and_send()
     elif function == 'new':
         new_key()
     elif function == 'import':

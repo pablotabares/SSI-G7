@@ -9,6 +9,7 @@ if len(sys.argv) < 2:
     print('->accounts (To list all saved accounts)')
     print('->transactions (To list all transactions)')
     print('->resend <account> (To resend the key via email to the customer)')
+    print('->stats (To view KPI and export graph)')
 else:
     function = sys.argv[1]
     if function == 'add':

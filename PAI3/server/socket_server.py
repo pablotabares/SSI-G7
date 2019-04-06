@@ -14,29 +14,40 @@ class Cliente(Thread):
 
     # Bucle para atender al cliente.
     def run(self):
-        # Bucle indefinido hasta que el cliente envie "adios"
-        # seguir = True
-        # while seguir:
-        # Espera por datos
-        peticion = self.conn.recv(1000)
+        #Pedimos el email y lo recibimos
+        self.conn.send('Email:'.encode())
+        mail = self.conn.recv(1000).decode()
 
-        # Contestacion
-        # if ("exit"!=peticion.decode()):
-        print (str(self.datos)+ " dice: "+peticion.decode())
-        [code, msg] = serverfunctions.receive(peticion.decode())
-        # Integridad Correcta
-        # if(code == 0):
-        # else:
+        #Pedimos la pass y la recibimos
+        self.conn.send('Password:'.encode())
+        pwd = self.conn.recv(1000).decode()
 
+        #Comprobamos las credenciales y enviamos el resultado
+        [success, msg, acc] = serverfunctions.login(mail, pwd)
+        print(msg)
+        self.conn.send('true'.encode() if success else 'false'.encode())
+        self.conn.send(msg.encode())
+
+        #En caso de que sean erroneas cerramos la conexion
+        if not success:
+            print ("Conexión cerrada con "+str(self.datos))
+            self.conn.shutdown(2)
+            self.conn.close()
+            return
+
+        #Recibimos la transferencia y la procesamos
+        peticion = self.conn.recv(1000).decode()
+        print (str(self.datos)+ " dice: "+peticion)
+        [code, msg] = serverfunctions.receive(peticion, acc)
+
+        #Imprimimos el resultado y se lo enviamos al cliente
         print(msg)
         self.conn.send(msg.encode())
-        # Contestacion y cierre a "exit"
-        # if ("exit"==peticion.decode()):
-        #     print (str(self.datos)+ " pide cerrar la conexión")
-        # self.socket.send("Cerrando la conexión".encode())
+
+        #Cerramos la conexión
+        self.conn.shutdown(2)
         self.conn.close()
         print ("Conexión cerrada con "+str(self.datos))
-        # seguir = False
 
 
 if __name__ == '__main__':
