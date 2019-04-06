@@ -1,0 +1,21 @@
+#### Clave Privada ####
+
+Pass phrase for server.key: iGJjObtuEb
+
+#### Solicitud de firma de certificado (CSR) ####
+
+Pass phrase for server.key: iGJjObtuEb
+Country Name: ES
+State or Province Name: Seville
+Locality Name: Seville
+Organization Name: INSEGUS
+Organizational Unit Name: G7
+Common Name: INSEGUS-G7
+Email Address: ssii.g7.etsii.us@gmail.com
+
+Challenge password: 40ei3ZPc56
+Optional company name: INSEGUS
+
+#### Eliminamos la passphrase de la clave ####
+
+Pass phrase for server.key.org: iGJjObtuEb
