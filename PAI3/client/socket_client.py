@@ -12,4 +12,5 @@ def connect_and_send(msg):
     conn.send(msg.encode())
     # Se recibe la respuesta y se escribe en pantalla
     datos = conn.recv(1000)
+    print('SERVER: ' + datos.decode())
     conn.close()

@@ -7,10 +7,10 @@ import server as serverfunctions
 #Clase con el hilo para atender a los clientes.
 #En el constructor recibe el socket con el cliente y los datos del cliente para escribir por pantalla
 class Cliente(Thread):
-    def __init__(self, socket_cliente, datos_cliente):
+    def __init__(self, conn, datos_cliente):
         Thread.__init__(self)
-        self.socket = socket_cliente
         self.datos = datos_cliente
+        self.conn = conn
 
     # Bucle para atender al cliente.
     def run(self):
@@ -18,7 +18,7 @@ class Cliente(Thread):
         # seguir = True
         # while seguir:
         # Espera por datos
-        peticion = self.socket.recv(1000)
+        peticion = self.conn.recv(1000)
 
         # Contestacion
         # if ("exit"!=peticion.decode()):
@@ -29,12 +29,12 @@ class Cliente(Thread):
         # else:
 
         print(msg)
-        self.socket.send(msg.encode())
+        self.conn.send(msg.encode())
         # Contestacion y cierre a "exit"
         # if ("exit"==peticion.decode()):
         #     print (str(self.datos)+ " pide cerrar la conexión")
         # self.socket.send("Cerrando la conexión".encode())
-        self.socket.close()
+        self.conn.close()
         print ("Conexión cerrada con "+str(self.datos))
         # seguir = False
 
@@ -57,5 +57,5 @@ if __name__ == '__main__':
         # Se escribe su informacion
         print ("Conexión establecida con "+str(datos_cliente))
         # Se crea la clase con el hilo y se arranca.
-        hilo = Cliente(socket_cliente, datos_cliente)
+        hilo = Cliente(conn, datos_cliente)
         hilo.start()

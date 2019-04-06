@@ -26,9 +26,7 @@ def send():
     while amt <= 0.00:
         amt = float(input('Amount to transfer in €:'))
     msg = num+'|$|'+dst+'|$|'+str(amt)+'|$|'+str(julian.to_jd(datetime.now()))
-    print(msg)
     digest = hmac.new(bytes(acc[1],'utf-8'), bytes(msg,'utf-8'), 'sha256').hexdigest()
-    print(digest)
     socket_client.connect_and_send(msg+'|$|'+digest)
 
 
