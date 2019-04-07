@@ -63,10 +63,13 @@ if __name__ == '__main__':
     while True:
         # Se espera a un cliente
         socket_cliente, datos_cliente = server.accept()
-        conn = ssl.wrap_socket(socket_cliente, server_side=True, certfile = "cert/server.crt", keyfile="cert/server.key", ssl_version = ssl.PROTOCOL_TLSv1)
+        try:
+                conn = ssl.wrap_socket(socket_cliente, server_side=True, certfile = "cert/server.crt", keyfile="cert/server.key", ssl_version = ssl.PROTOCOL_TLSv1_2)
 
-        # Se escribe su informacion
-        print ("Conexión establecida con "+str(datos_cliente))
-        # Se crea la clase con el hilo y se arranca.
-        hilo = Cliente(conn, datos_cliente)
-        hilo.start()
+                # Se escribe su informacion
+                print ("Conexión establecida con "+str(datos_cliente))
+                # Se crea la clase con el hilo y se arranca.
+                hilo = Cliente(conn, datos_cliente)
+                hilo.start()
+        except:
+                print('Exception')
